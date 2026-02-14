@@ -6,13 +6,23 @@ Send emails via Gmail using App Password authentication with Markdown content su
 
 ## ✨ Features
 
-- 📧 **Gmail SMTP Integration** - Send emails through Gmail's secure SMTP server
-- 🔐 **App Password Authentication** - Secure authentication using Gmail App Passwords  
-- 📝 **Markdown Support** - Automatic conversion from Markdown to rich HTML emails
-- 🤖 **MCP Compatible** - Full Model Context Protocol support for AI agents
-- 🔍 **Rich Error Reporting** - Detailed success/failure feedback with error types
-- ✅ **Input Validation** - Comprehensive email and parameter validation
-- 🎯 **OpenAI Function Calling** - Compatible with OpenAI Function Calling standard
+### 📧 Core Email Functionality
+- **Gmail SMTP Integration** - Send emails through Gmail's secure SMTP server (Port 587, TLS)
+- **App Password Authentication** - Secure authentication using Gmail App Passwords
+- **Rich Error Reporting** - Detailed success/failure feedback with error types
+- **Input Validation** - Comprehensive email and parameter validation
+
+### 📝 Enhanced Markdown Support (v1.1.0+)
+- **Advanced Markdown Conversion** - Full markdown library support with extensions (BSD license)
+- **Professional Email Styling** - Email-safe CSS with responsive design
+- **Graceful Fallback System** - Basic Markdown converter when external library unavailable
+- **Commercial License Compliance** - BSD-licensed dependencies for commercial use
+- **Email Client Compatibility** - Optimized HTML for major email clients
+
+### 🤖 AI Integration
+- **MCP Compatible** - Full Model Context Protocol support for AI agents
+- **OpenAI Function Calling** - Compatible with OpenAI Function Calling standard
+- **Skill Framework** - Standalone and integrated execution modes
 
 ## 🚀 Quick Start
 
@@ -56,6 +66,54 @@ python3 test_gmail_skill.py
 ```
 
 ## 📧 Usage Example
+
+### Enhanced Markdown to HTML Conversion (v1.1.0+)
+
+The skill now supports advanced Markdown conversion with professional email styling:
+
+#### Supported Markdown Features
+- **Headers** (H1-H6) with proper hierarchy
+- **Text Formatting** - Bold, italic, strikethrough
+- **Lists** - Ordered and unordered with nesting
+- **Links** - Automatic link formatting
+- **Code Blocks** - Syntax highlighting and inline code
+- **Blockquotes** - Professional quote styling
+- **Tables** - Responsive table design (with markdown library)
+
+#### Email Styling Features
+- 📱 **Responsive Design** - Adapts to desktop and mobile email clients
+- 🎨 **Professional CSS** - Clean, modern email appearance
+- 📧 **Email Client Compatibility** - Works with Gmail, Outlook, Apple Mail, etc.
+- 🔧 **Graceful Fallback** - Basic conversion when advanced features unavailable
+
+#### Markdown Content Example
+```markdown
+# Project Status Report
+
+## Executive Summary
+The project is **on track** with key milestones achieved:
+
+### Completed Tasks ✅
+1. User authentication system
+2. Database schema design
+3. API endpoints implementation
+
+### In Progress 🚧
+- Front-end development
+- Integration testing
+- Performance optimization
+
+> **Note**: All deliverables are meeting quality standards.
+
+For technical details, see: [Project Documentation](https://example.com/docs)
+
+```python
+def get_project_status():
+    return "Active"
+```
+```
+
+This Markdown will be converted to professional HTML email format automatically.
 
 ### Basic Email Sending
 
@@ -208,6 +266,56 @@ python3 mcp_server.py --test
 python3 version.py --info
 ```
 
+## ⚙️ Technical Details
+
+### Dependencies and Licensing
+
+#### Core Dependencies (Built-in Python)
+- `smtplib` - SMTP email sending
+- `email.mime` - Email composition
+- `ssl` - TLS encryption
+- `json` - Configuration handling
+- `re` - Regular expressions for fallback conversion
+
+#### Optional Enhancement (Commercial-Friendly)
+- **markdown** library (BSD 3-Clause License)
+  - ✅ Commercial use allowed
+  - ✅ Distribution allowed  
+  - ✅ Modification allowed
+  - 🔧 Graceful fallback when unavailable
+
+#### System Requirements
+- Python 3.7+ (tested up to 3.12)
+- Internet connection for Gmail SMTP
+- Gmail account with 2FA enabled
+
+### Architecture
+
+```
+Gmail Send Skill Architecture
+├── gmail_send_skill.py      # Core skill implementation
+├── skill_compat.py          # Framework compatibility layer
+├── mcp_server.py           # MCP Protocol server
+└── version.py              # Version management
+
+HTML Conversion Pipeline:
+Markdown Content → Advanced/Basic Converter → CSS Styling → Email HTML
+```
+
+### Conversion System Details
+
+#### Advanced Mode (with markdown library)
+- Full CommonMark specification support
+- Extensions: tables, strikethrough, task lists
+- Professional syntax highlighting
+- Advanced table rendering
+
+#### Fallback Mode (built-in)
+- Regex-based Markdown parsing
+- Core element support (headers, lists, formatting)
+- Email-safe HTML generation
+- Professional CSS styling maintained
+
 ## 📚 Documentation
 
 - 📖 **[Usage Guide](GMAIL_SEND_USAGE.md)** - Comprehensive usage instructions and examples
@@ -355,9 +463,31 @@ python3 test_gmail_skill.py
 python3 -m flake8 gmail_send_skill.py
 ```
 
-## 📄 License
+## � Version History
+
+### v1.1.0 (2024-12-19) - Enhanced Markdown Support
+- ✨ **Advanced Markdown Conversion** - Full markdown library support with extensions
+- 🎨 **Professional Email Styling** - Responsive CSS for email clients
+- 🔧 **Graceful Fallback System** - Basic converter when external library unavailable  
+- ⚖️ **Commercial License Compliance** - BSD-licensed dependencies
+- 📧 **Email Client Optimization** - Improved compatibility across platforms
+- 🧪 **Enhanced Testing** - Comprehensive conversion and styling tests
+
+### v1.0.0 (2024-12-19) - Initial Release
+- 📧 **Gmail SMTP Integration** - Secure email sending via Gmail
+- 🔐 **App Password Authentication** - Secure credential handling
+- 🤖 **MCP Protocol Support** - Full Model Context Protocol implementation
+- 📝 **Basic Markdown Support** - Simple markdown to HTML conversion
+- ✅ **Comprehensive Testing** - 18 unit tests with edge case coverage
+- 🛠️ **Local Development Tools** - Configuration templates and testing utilities
+
+## �📄 License
 
 This project is licensed under the terms specified in the [LICENSE](LICENSE) file.
+
+### Third-Party License Compliance
+- **markdown library** (Optional) - BSD 3-Clause License - Commercial use allowed
+- **Python Standard Library** - Python Software Foundation License
 
 ## 🙏 Acknowledgments
 
@@ -365,10 +495,11 @@ This project is licensed under the terms specified in the [LICENSE](LICENSE) fil
 - **OpenAI Function Calling** - For the function schema standard  
 - **Gmail SMTP** - For reliable email delivery infrastructure
 - **Python Community** - For the excellent libraries and tools
+- **Markdown Community** - For the BSD-licensed markdown processing library
 
 ---
 
 **Built for AI-Powered Applications** 🤖 | **MCP Compatible** 🔌 | **Production Ready** 🚀
 
-*Gmail Send Skill v1.0.0 - Empowering AI agents with email capabilities*
+*Gmail Send Skill v1.1.0 - Enhanced Markdown conversion with professional email styling*
 Send mail through gmail.

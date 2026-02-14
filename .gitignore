@@ -53,6 +53,11 @@ config_local.json
 credentials.json
 secrets.json
 
+# Local Testing Files
+test_local_*.py
+local_test_*.json
+*_local_test.*
+
 # Backup Files
 backup/
 *.bak
@@ -86,7 +91,6 @@ desktop.ini
 
 # Local Development
 local_test.py
-test_local.py
 debug_*.py
 
 # Build and Distribution

@@ -1,0 +1,53 @@
+{
+  "_metadata": {
+    "description": "Gmail Send Skill Configuration Template",
+    "version": "1.0.0",
+    "created": "2026-02-14",
+    "usage": "Copy this file to config_local.json and fill in your actual values"
+  },
+  "gmail_config": {
+    "username": "your.email@gmail.com",
+    "app_password": "REPLACE_WITH_YOUR_16_CHAR_APP_PASSWORD",
+    "from_name": "Your Display Name"
+  },
+  "test_config": {
+    "to_email": "recipient@example.com",
+    "test_subject": "Gmail Send Skill Test Email",
+    "test_content_markdown": "# Test Email from Gmail Send Skill\n\n## Features Test\n\nThis email tests the following features:\n\n- **Gmail SMTP** sending via App Password\n- **Markdown to HTML** conversion\n- *Rich formatting* support\n- `Code formatting`\n\n## Test Information\n\n- **Sent from**: Gmail Send Skill v1.0.0\n- **Date**: {{CURRENT_DATE}}\n- **Protocol**: MCP Compatible\n\n### Links Test\n\n- [Gmail Send Skill Repository](https://github.com/baddif/mcp-server-gmail-send)\n- [MCP Protocol Documentation](https://modelcontextprotocol.io/)\n\n### List Test\n\n1. First item\n2. Second item\n3. Third item\n\n- Bullet point 1\n- Bullet point 2\n- Bullet point 3\n\n> This is a blockquote to test formatting.\n\nIf you received this email, the Gmail Send Skill is working correctly! 🎉\n\n---\n\n*Best regards,*  \n**Gmail Send Skill Team**"
+  },
+  "smtp_config": {
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": 587,
+    "use_tls": true,
+    "timeout": 30
+  },
+  "testing": {
+    "enable_real_send": false,
+    "mock_mode": true,
+    "log_level": "INFO"
+  },
+  "instructions": {
+    "setup": [
+      "1. Copy this file to config_local.json",
+      "2. Replace 'your.email@gmail.com' with your Gmail address",
+      "3. Replace 'REPLACE_WITH_YOUR_16_CHAR_APP_PASSWORD' with your Gmail App Password",
+      "4. Replace 'recipient@example.com' with a test recipient email",
+      "5. Update 'Your Display Name' with your preferred sender name",
+      "6. Set 'enable_real_send' to true when ready for real testing"
+    ],
+    "app_password_setup": [
+      "1. Go to Google Account settings (https://myaccount.google.com/)",
+      "2. Enable 2-Factor Authentication",
+      "3. Go to Security → 2-Step Verification → App Passwords",
+      "4. Select 'Mail' and generate password",
+      "5. Copy the 16-character password (format: abcd efgh ijkl mnop)",
+      "6. Use this password in the 'app_password' field"
+    ],
+    "security_notes": [
+      "⚠️  NEVER commit config_local.json to version control",
+      "⚠️  App passwords are sensitive - treat them like regular passwords",
+      "⚠️  Use different App passwords for different applications",
+      "⚠️  Regularly rotate App passwords for security"
+    ]
+  }
+}

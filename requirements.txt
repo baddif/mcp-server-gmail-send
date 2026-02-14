@@ -1,0 +1,22 @@
+# Gmail Send Skill Requirements
+# Core Python libraries (built-in)
+# - smtplib: SMTP client for sending emails
+# - email: Email handling and MIME message creation  
+# - json: JSON serialization/deserialization
+# - logging: Logging functionality
+# - typing: Type hints support
+
+# Optional dependencies for enhanced functionality
+markdown>=3.4.0  # For Markdown to HTML conversion (optional)
+
+# Development and testing dependencies (optional)
+pytest>=7.0.0           # For unit testing
+pytest-asyncio>=0.20.0  # For async test support
+
+# MCP Protocol dependencies
+# Note: MCP protocol is implemented using built-in libraries
+# No additional MCP-specific packages required
+
+# For Claude Desktop integration:
+# - Ensure Python 3.7+ is installed
+# - Place mcp_config.json in Claude Desktop's configuration directory

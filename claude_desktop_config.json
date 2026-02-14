@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "gmail-send": {
+      "command": "python",
+      "args": [
+        "/Users/dif/Projects/LectureProject/mcp-server-gmail-send/mcp_server.py"
+      ],
+      "env": {
+        "PYTHONPATH": "/Users/dif/Projects/LectureProject/mcp-server-gmail-send"
+      }
+    }
+  }
+}

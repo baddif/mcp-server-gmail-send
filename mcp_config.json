@@ -1,0 +1,42 @@
+{
+  "mcpServers": {
+    "gmail-send": {
+      "command": "python",
+      "args": [
+        "/Users/dif/Projects/LectureProject/mcp-server-gmail-send/mcp_server.py"
+      ],
+      "env": {
+        "PYTHONPATH": "/Users/dif/Projects/LectureProject/mcp-server-gmail-send"
+      },
+      "description": "Gmail Send Skill - Send emails via Gmail using App Password authentication with Markdown support",
+      "version": "1.0.0",
+      "capabilities": {
+        "tools": true,
+        "resources": true,
+        "prompts": true
+      },
+      "settings": {
+        "timeout": 30000,
+        "retries": 3
+      }
+    }
+  },
+  "_metadata": {
+    "description": "MCP Configuration for Gmail Send Skill",
+    "created": "2026-02-14",
+    "version": "1.0.0",
+    "instructions": [
+      "1. Update the 'args' path to match your installation directory",
+      "2. Ensure Python 3.7+ is installed and accessible",
+      "3. Install optional dependencies: pip install markdown",
+      "4. For Claude Desktop: Copy this configuration to Claude's MCP config file",
+      "5. Restart Claude Desktop after configuration changes"
+    ],
+    "security_notes": [
+      "Never store actual Gmail credentials in configuration files",
+      "App Passwords should be provided at runtime only",
+      "Use Gmail App Passwords, not regular account passwords",
+      "Enable 2-Factor Authentication before generating App Passwords"
+    ]
+  }
+}

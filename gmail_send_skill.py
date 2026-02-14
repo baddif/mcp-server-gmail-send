@@ -8,16 +8,63 @@ Supports Markdown content conversion to HTML and returns success/failure status.
 import smtplib
 import json
 import logging
+import re
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.utils import formataddr
 from typing import Any, Dict, List
 from datetime import datetime
 
+# Markdown processing with fallback and extension support
 try:
     import markdown
+    MARKDOWN_AVAILABLE = True
+    MARKDOWN_VERSION = getattr(markdown, '__version__', 'unknown')
+    
+    # Try to import common extensions (gracefully handle missing ones)
+    AVAILABLE_EXTENSIONS = []
+    
+    try:
+        from markdown.extensions import tables
+        AVAILABLE_EXTENSIONS.append('tables')
+    except ImportError:
+        pass
+    
+    try:
+        from markdown.extensions import fenced_code  
+        AVAILABLE_EXTENSIONS.append('fenced_code')
+    except ImportError:
+        pass
+        
+    try:
+        from markdown.extensions import codehilite
+        AVAILABLE_EXTENSIONS.append('codehilite')  
+    except ImportError:
+        pass
+        
+    try:
+        from markdown.extensions import toc
+        AVAILABLE_EXTENSIONS.append('toc')
+    except ImportError:
+        pass
+        
+    try:
+        from markdown.extensions import nl2br
+        AVAILABLE_EXTENSIONS.append('nl2br')
+    except ImportError:
+        pass
+        
+    try:
+        from markdown.extensions import attr_list
+        AVAILABLE_EXTENSIONS.append('attr_list')
+    except ImportError:
+        pass
+        
 except ImportError:
     markdown = None
+    MARKDOWN_AVAILABLE = False
+    MARKDOWN_VERSION = None
+    AVAILABLE_EXTENSIONS = []
 
 # Framework compatibility layer
 try:
@@ -109,22 +156,264 @@ class GmailSendSkill(McpCompatibleSkill):
         pattern = r'^[a-zA-Z0-9]{16}$'
         return re.match(pattern, app_password.replace(' ', '')) is not None
     
+    def _get_email_css(self) -> str:
+        """Generate CSS styles for HTML emails"""
+        return """
+        <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #2c3e50;
+            margin-top: 24px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+        h1 { font-size: 28px; border-bottom: 2px solid #3498db; padding-bottom: 8px; }
+        h2 { font-size: 24px; border-bottom: 1px solid #bdc3c7; padding-bottom: 4px; }
+        h3 { font-size: 20px; }
+        h4 { font-size: 18px; }
+        h5 { font-size: 16px; }
+        h6 { font-size: 14px; }
+        p {
+            margin-bottom: 16px;
+        }
+        strong {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        em {
+            font-style: italic;
+            color: #34495e;
+        }
+        code {
+            background-color: #f8f9fa;
+            color: #e74c3c;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+        }
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #e1e5e8;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+        pre code {
+            background-color: transparent;
+            color: #333;
+            padding: 0;
+        }
+        blockquote {
+            border-left: 4px solid #3498db;
+            margin: 16px 0;
+            padding: 8px 16px;
+            background-color: #f8f9fa;
+            color: #555;
+        }
+        ul, ol {
+            margin: 16px 0;
+            padding-left: 24px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 16px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        hr {
+            border: none;
+            border-top: 2px solid #bdc3c7;
+            margin: 24px 0;
+        }
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        </style>
+        """
+
+    def _enhance_html_content(self, html_content: str) -> str:
+        """Enhance HTML content with better formatting and email-safe styles"""
+        # Add CSS styles
+        css = self._get_email_css()
+        
+        # Wrap content in proper HTML structure
+        enhanced_html = f"""<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {css}
+</head>
+<body>
+    {html_content}
+</body>
+</html>"""
+        
+        return enhanced_html
+
     def _convert_markdown_to_html(self, markdown_content: str) -> str:
-        """Convert Markdown content to HTML"""
-        if markdown is None:
-            self.logger.warning("Markdown library not available, sending as plain text")
-            return markdown_content.replace('\n', '<br>')
+        """Convert Markdown content to HTML with enhanced styling and features"""
+        if not MARKDOWN_AVAILABLE:
+            self.logger.warning("Markdown library not available, using basic HTML conversion")
+            return self._basic_markdown_to_html(markdown_content)
         
         try:
-            html = markdown.markdown(
-                markdown_content,
-                extensions=['tables', 'fenced_code', 'nl2br']
+            # Configure extensions based on what's available
+            extensions = []
+            extension_configs = {}
+            
+            # Core extensions for better email formatting
+            if 'tables' in AVAILABLE_EXTENSIONS:
+                extensions.append('tables')
+            if 'fenced_code' in AVAILABLE_EXTENSIONS:
+                extensions.append('fenced_code')
+            if 'nl2br' in AVAILABLE_EXTENSIONS:
+                extensions.append('nl2br')
+            if 'attr_list' in AVAILABLE_EXTENSIONS:
+                extensions.append('attr_list')
+            
+            # Add TOC if available (useful for long emails)
+            if 'toc' in AVAILABLE_EXTENSIONS:
+                extensions.append('toc')
+                extension_configs['toc'] = {
+                    'title': '目录',
+                    'anchorlink': True
+                }
+            
+            # Code highlighting (if available)
+            if 'codehilite' in AVAILABLE_EXTENSIONS:
+                extensions.append('codehilite')
+                extension_configs['codehilite'] = {
+                    'use_pygments': False,  # Avoid external dependencies
+                    'noclasses': True,      # Inline styles for email compatibility
+                }
+            
+            # Always include these basic extensions
+            base_extensions = ['extra', 'smarty', 'meta']
+            for ext in base_extensions:
+                try:
+                    # Test if extension is available
+                    test_md = markdown.Markdown(extensions=[ext])
+                    extensions.append(ext)
+                except Exception:
+                    pass  # Skip unavailable extensions
+            
+            self.logger.info(f"Using Markdown extensions: {extensions}")
+            
+            # Create markdown instance with configured extensions
+            md = markdown.Markdown(
+                extensions=extensions,
+                extension_configs=extension_configs,
+                tab_length=4
             )
-            return html
+            
+            # Convert to HTML
+            html = md.convert(markdown_content)
+            
+            # Enhance with email-safe styling
+            enhanced_html = self._enhance_html_content(html)
+            
+            self.logger.info(f"Markdown conversion successful, output length: {len(enhanced_html)} chars")
+            return enhanced_html
+            
         except Exception as e:
-            self.logger.error(f"Failed to convert Markdown to HTML: {str(e)}")
-            # Fallback: simple newline to BR conversion
-            return markdown_content.replace('\n', '<br>')
+            self.logger.error(f"Advanced Markdown conversion failed: {str(e)}")
+            self.logger.info("Falling back to basic HTML conversion")
+            return self._basic_markdown_to_html(markdown_content)
+
+    def _basic_markdown_to_html(self, markdown_content: str) -> str:
+        """Basic Markdown to HTML conversion when markdown library is not available"""
+        html = markdown_content
+        
+        # Convert headers
+        html = re.sub(r'^# (.+)$', r'<h1>\1</h1>', html, flags=re.MULTILINE)
+        html = re.sub(r'^## (.+)$', r'<h2>\1</h2>', html, flags=re.MULTILINE)
+        html = re.sub(r'^### (.+)$', r'<h3>\1</h3>', html, flags=re.MULTILINE)
+        html = re.sub(r'^#### (.+)$', r'<h4>\1</h4>', html, flags=re.MULTILINE)
+        html = re.sub(r'^##### (.+)$', r'<h5>\1</h5>', html, flags=re.MULTILINE)
+        html = re.sub(r'^###### (.+)$', r'<h6>\1</h6>', html, flags=re.MULTILINE)
+        
+        # Convert bold and italic
+        html = re.sub(r'\*\*([^*]+)\*\*', r'<strong>\1</strong>', html)
+        html = re.sub(r'\*([^*]+)\*', r'<em>\1</em>', html)
+        html = re.sub(r'__([^_]+)__', r'<strong>\1</strong>', html)
+        html = re.sub(r'_([^_]+)_', r'<em>\1</em>', html)
+        
+        # Convert inline code
+        html = re.sub(r'`([^`]+)`', r'<code>\1</code>', html)
+        
+        # Convert links
+        html = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', r'<a href="\2">\1</a>', html)
+        
+        # Convert unordered lists
+        lines = html.split('\n')
+        in_ul = False
+        result_lines = []
+        
+        for line in lines:
+            if re.match(r'^[-*+] ', line):
+                if not in_ul:
+                    result_lines.append('<ul>')
+                    in_ul = True
+                item_text = re.sub(r'^[-*+] ', '', line)
+                result_lines.append(f'<li>{item_text}</li>')
+            else:
+                if in_ul:
+                    result_lines.append('</ul>')
+                    in_ul = False
+                if line.strip():
+                    result_lines.append(f'<p>{line}</p>')
+                else:
+                    result_lines.append('<br>')
+        
+        if in_ul:
+            result_lines.append('</ul>')
+        
+        html = '\n'.join(result_lines)
+        
+        # Convert blockquotes
+        html = re.sub(r'^> (.+)$', r'<blockquote>\1</blockquote>', html, flags=re.MULTILINE)
+        
+        # Convert horizontal rules
+        html = re.sub(r'^---+$', '<hr>', html, flags=re.MULTILINE)
+        
+        # Enhance with styling
+        enhanced_html = self._enhance_html_content(html)
+        
+        self.logger.info("Basic Markdown conversion completed")
+        return enhanced_html
     
     def _send_email(self, username: str, app_password: str, to_email: str, 
                    subject: str, content: str, from_name: str = None) -> Dict[str, Any]:
@@ -386,7 +675,22 @@ class GmailSendSkill(McpCompatibleSkill):
                 "status": "ready",
                 "smtp_server": self.smtp_server,
                 "smtp_port": self.smtp_port,
-                "markdown_support": markdown is not None,
+                "markdown_support": {
+                    "available": MARKDOWN_AVAILABLE,
+                    "version": MARKDOWN_VERSION,
+                    "extensions": AVAILABLE_EXTENSIONS,
+                    "enhanced_styling": True,
+                    "email_safe_css": True,
+                    "fallback_converter": True
+                },
+                "features": {
+                    "html_conversion": True,
+                    "css_styling": True,
+                    "table_support": 'tables' in AVAILABLE_EXTENSIONS,
+                    "code_highlighting": 'codehilite' in AVAILABLE_EXTENSIONS,
+                    "toc_generation": 'toc' in AVAILABLE_EXTENSIONS,
+                    "advanced_formatting": True
+                },
                 "last_execution": self.last_result is not None
             }
             return {

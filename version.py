@@ -9,10 +9,10 @@ from datetime import datetime
 from typing import Dict, Any
 
 # Version information
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 __release_date__ = "2026-02-14"
 __author__ = "AI Assistant"
-__description__ = "Gmail Send Skill - Email sending via Gmail with App Password authentication"
+__description__ = "Gmail Send Skill - Enhanced email sending with advanced Markdown to HTML conversion"
 
 # Version metadata
 VERSION_INFO = {
@@ -23,25 +23,45 @@ VERSION_INFO = {
     "features": [
         "Gmail SMTP email sending",
         "App Password authentication",
-        "Markdown to HTML conversion", 
+        "Enhanced Markdown to HTML conversion with styling", 
+        "Email-safe CSS styling and formatting",
+        "Advanced Markdown extensions support",
+        "Graceful fallback conversion system",
         "MCP (Model Context Protocol) support",
         "OpenAI Function Calling compatibility",
         "Rich error reporting",
-        "Email validation"
+        "Email validation",
+        "Commercial-friendly licensing"
     ],
     "requirements": [
         "Python 3.7+",
         "smtplib (built-in)",
         "email (built-in)", 
-        "markdown (optional, for rich formatting)"
+        "re (built-in, for basic conversion)",
+        "markdown>=3.4.0 (optional, BSD licensed - commercial use allowed)"
     ],
     "changelog": {
+        "1.1.0": {
+            "date": "2026-02-14",
+            "changes": [
+                "Enhanced Markdown to HTML conversion with professional email styling",
+                "Added email-safe CSS styling system",
+                "Implemented graceful extension loading for Markdown features",
+                "Added comprehensive fallback conversion system",
+                "Enhanced table, code, and typography support",
+                "Added TOC (Table of Contents) generation capability",
+                "Improved error handling and logging for Markdown conversion",
+                "Updated license information for commercial use compliance",
+                "Enhanced HTML structure with proper DOCTYPE and metadata",
+                "Added responsive design elements for better email client compatibility"
+            ]
+        },
         "1.0.0": {
             "date": "2026-02-14",
             "changes": [
                 "Initial release",
                 "Gmail send functionality with App Password",
-                "Markdown content support",
+                "Basic Markdown content support",
                 "MCP server implementation", 
                 "Comprehensive error handling",
                 "Email format validation"

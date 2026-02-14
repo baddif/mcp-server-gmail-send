@@ -5,18 +5,35 @@
 # - json: JSON serialization/deserialization
 # - logging: Logging functionality
 # - typing: Type hints support
+# - re: Regular expressions for text processing
 
-# Optional dependencies for enhanced functionality
-markdown>=3.4.0  # For Markdown to HTML conversion (optional)
+# Markdown processing dependencies (enhanced support)
+# License: BSD 3-Clause (Commercial Use: ✅ Allowed)
+markdown>=3.4.0         # Core Markdown to HTML conversion
+Markdown>=3.4.0         # Alternative capitalization for compatibility
+
+# Optional Markdown extensions (all BSD licensed - Commercial Use: ✅)
+# These provide enhanced functionality but are gracefully handled if missing
+# - Tables: Enhanced table support
+# - Fenced Code: Code block support with syntax highlighting
+# - TOC: Table of contents generation
+# - Extra: Collection of useful extensions
+# - Smarty: Smart quotes and typography
 
 # Development and testing dependencies (optional)
-pytest>=7.0.0           # For unit testing
-pytest-asyncio>=0.20.0  # For async test support
+pytest>=7.0.0           # For unit testing (MIT License - Commercial Use: ✅)
+pytest-asyncio>=0.20.0  # For async test support (Apache 2.0 - Commercial Use: ✅)
 
 # MCP Protocol dependencies
 # Note: MCP protocol is implemented using built-in libraries
 # No additional MCP-specific packages required
 
+# License Information:
+# - markdown (BSD 3-Clause): ✅ Commercial use allowed, attribution required
+# - pytest (MIT): ✅ Commercial use allowed, minimal restrictions
+# - Built-in Python libraries: ✅ Commercial use allowed (PSF License)
+
 # For Claude Desktop integration:
 # - Ensure Python 3.7+ is installed
 # - Place mcp_config.json in Claude Desktop's configuration directory
+# - All dependencies are compatible with commercial use

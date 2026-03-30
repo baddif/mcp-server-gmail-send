@@ -1,15 +1,15 @@
 {
   "mcpServers": {
-    "gmail-send": {
+    "gmail_send": {
       "command": "python",
       "args": [
-        "/Users/dif/Projects/LectureProject/mcp-server-gmail-send/mcp_server.py"
+        "/Users/dif/Projects/LectureProject/mcp-server-gmail-send/main.py"
       ],
       "env": {
         "PYTHONPATH": "/Users/dif/Projects/LectureProject/mcp-server-gmail-send"
       },
       "description": "Gmail Send Skill - Send emails via Gmail using App Password authentication with Markdown support",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "capabilities": {
         "tools": true,
         "resources": true,

@@ -9,8 +9,8 @@ from datetime import datetime
 from typing import Dict, Any
 
 # Version information
-__version__ = "1.1.0"
-__release_date__ = "2026-02-14"
+__version__ = "1.1.1"
+__release_date__ = "2026-03-31"
 __author__ = "AI Assistant"
 __description__ = "Gmail Send Skill - Enhanced email sending with advanced Markdown to HTML conversion"
 
@@ -54,6 +54,16 @@ VERSION_INFO = {
                 "Updated license information for commercial use compliance",
                 "Enhanced HTML structure with proper DOCTYPE and metadata",
                 "Added responsive design elements for better email client compatibility"
+            ]
+        },
+        "1.1.1": {
+            "date": "2026-03-31",
+            "changes": [
+                "Update requirements.txt to include runtime dependencies (typer)",
+                "Standardize output schema to top-level success/data/error per SKILL_GENERATION_RULES",
+                "Add CLI entrypoint (main.py) and Skill.md documentation",
+                "Fix and update unit tests to match new schema and mock SMTP in tests",
+                "Update mcp_config.json naming to follow conventions (gmail_send)"
             ]
         },
         "1.0.0": {

@@ -30,3 +30,19 @@ python3 main.py gmail-send <username> <app_password> <content> <to_email> --subj
 
 ## Changelog
 See `version.py` for full changelog details.
+
+---
+
+# Release Notes - v1.1.2 (2026-03-31)
+
+This release adds CI automation and small packaging improvements.
+
+## Highlights
+
+- Added `.github/workflows/ci.yml` to run tests on push and PR
+- Minor metadata improvements and prep work for automated releases
+
+## Developer Notes
+
+- CI will run pytest if available; otherwise it falls back to the repository's unittest script.
+

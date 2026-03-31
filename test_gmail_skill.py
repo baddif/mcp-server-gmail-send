@@ -161,22 +161,27 @@ class TestGmailSendSkill(unittest.TestCase):
     
     def test_parameter_validation_success(self):
         """Test successful parameter validation"""
-        result = self.skill.execute(self.context, **self.valid_params)
-        
-        # Should not fail due to validation errors
-        if not result.get("success"):
-            error_type = result.get("error", {}).get("type", "")
-            self.assertNotEqual(error_type, "validation_error", 
-                              f"Validation should pass, but got: {result.get('error', {}).get('message')}")
+        # Prevent real SMTP calls during this test
+        with patch('smtplib.SMTP') as mock_smtp_class:
+            mock_smtp = MagicMock()
+            mock_smtp_class.return_value = mock_smtp
+
+            result = self.skill.execute(self.context, **self.valid_params)
+
+            # Should be successful per top-level schema
+            self.assertTrue(result.get("success"), f"Execution failed: {result.get('error')}")
     
     def test_parameter_validation_failures(self):
         """Test parameter validation error cases"""
         for case_name, params in self.invalid_params.items():
             with self.subTest(case=case_name):
                 result = self.skill.execute(self.context, **params)
-                
+
                 self.assertFalse(result.get("success"), f"Should fail for {case_name}")
-                self.assertEqual(result.get("error", {}).get("type"), "validation_error")
+                # Error is a string containing validation_error prefix
+                err = result.get("error")
+                self.assertIsInstance(err, str)
+                self.assertTrue(err.startswith("validation_error"))
     
     @patch('smtplib.SMTP')
     def test_successful_email_send(self, mock_smtp_class):
@@ -186,12 +191,15 @@ class TestGmailSendSkill(unittest.TestCase):
         mock_smtp_class.return_value = mock_smtp
         
         result = self.skill.execute(self.context, **self.valid_params)
-        
-        # Check result
+
+        # Check result per new schema
         self.assertTrue(result.get("success"))
-        self.assertEqual(result.get("function_name"), "gmail_send")
-        self.assertIn("result", result)
-        
+        data = result.get("data")
+        self.assertIsNotNone(data)
+        self.assertIn("function_name", data)
+        self.assertEqual(data.get("function_name"), "gmail_send")
+        self.assertIn("result", data)
+
         # Check SMTP interactions
         mock_smtp_class.assert_called_once_with("smtp.gmail.com", 587)
         mock_smtp.starttls.assert_called_once()
@@ -209,9 +217,12 @@ class TestGmailSendSkill(unittest.TestCase):
         mock_smtp_class.return_value = mock_smtp
         
         result = self.skill.execute(self.context, **self.valid_params)
-        
+
         self.assertFalse(result.get("success"))
-        self.assertEqual(result.get("error", {}).get("type"), "authentication_error")
+        # Error string should include authentication_error prefix
+        err = result.get("error")
+        self.assertIsInstance(err, str)
+        self.assertTrue(err.startswith("authentication_error"))
     
     def test_context_storage(self):
         """Test that results are stored in context"""

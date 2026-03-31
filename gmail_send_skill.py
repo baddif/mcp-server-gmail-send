@@ -509,73 +509,52 @@ class GmailSendSkill(McpCompatibleSkill):
             if not username:
                 return {
                     "success": False,
-                    "function_name": "gmail_send",
-                    "error": {
-                        "message": "Username is required",
-                        "type": "validation_error"
-                    }
+                    "data": None,
+                    "error": "validation_error: Username is required"
                 }
             
             if not app_password:
                 return {
                     "success": False,
-                    "function_name": "gmail_send",
-                    "error": {
-                        "message": "App Password is required",
-                        "type": "validation_error"
-                    }
+                    "data": None,
+                    "error": "validation_error: App Password is required"
                 }
             
             if not content:
                 return {
                     "success": False,
-                    "function_name": "gmail_send",
-                    "error": {
-                        "message": "Email content is required",
-                        "type": "validation_error"
-                    }
+                    "data": None,
+                    "error": "validation_error: Email content is required"
                 }
             
             if not to_email:
                 return {
                     "success": False,
-                    "function_name": "gmail_send",
-                    "error": {
-                        "message": "Recipient email address is required",
-                        "type": "validation_error"
-                    }
+                    "data": None,
+                    "error": "validation_error: Recipient email address is required"
                 }
             
             # Validate email formats
             if not self._validate_email(username):
                 return {
                     "success": False,
-                    "function_name": "gmail_send",
-                    "error": {
-                        "message": "Invalid username email format",
-                        "type": "validation_error"
-                    }
+                    "data": None,
+                    "error": "validation_error: Invalid username email format"
                 }
             
             if not self._validate_email(to_email):
                 return {
                     "success": False,
-                    "function_name": "gmail_send",
-                    "error": {
-                        "message": "Invalid recipient email format",
-                        "type": "validation_error"
-                    }
+                    "data": None,
+                    "error": "validation_error: Invalid recipient email format"
                 }
             
             # Validate App Password format
             if not self._validate_app_password(app_password):
                 return {
                     "success": False,
-                    "function_name": "gmail_send",
-                    "error": {
-                        "message": "Invalid App Password format. Should be 16 alphanumeric characters.",
-                        "type": "validation_error"
-                    }
+                    "data": None,
+                    "error": "validation_error: Invalid App Password format. Should be 16 alphanumeric characters."
                 }
             
             # Send email
@@ -598,35 +577,39 @@ class GmailSendSkill(McpCompatibleSkill):
             if result["success"]:
                 return {
                     "success": True,
-                    "function_name": "gmail_send",
-                    "result": {
-                        "message": result["message"],
-                        "timestamp": result["timestamp"],
-                        "from": username,
-                        "to": to_email,
-                        "subject": subject
-                    }
+                    "data": {
+                        "function_name": "gmail_send",
+                        "result": {
+                            "message": result["message"],
+                            "timestamp": result["timestamp"],
+                            "from": username,
+                            "to": to_email,
+                            "subject": subject
+                        }
+                    },
+                    "error": None
                 }
             else:
+                # Normalize error message into a single string to follow contract
+                err_type = result.get("error_type", "execution_error")
+                message = result.get("message", "An error occurred")
+                details = result.get("details")
+                err_str = f"{err_type}: {message}"
+                if details:
+                    err_str = f"{err_str} - {details}"
+
                 return {
                     "success": False,
-                    "function_name": "gmail_send",
-                    "error": {
-                        "message": result["message"],
-                        "type": result["error_type"],
-                        "details": result.get("details")
-                    }
+                    "data": None,
+                    "error": err_str
                 }
                 
         except Exception as e:
             self.logger.error(f"Unexpected error in gmail_send: {str(e)}")
             return {
                 "success": False,
-                "function_name": "gmail_send",
-                "error": {
-                    "message": f"Unexpected error: {str(e)}",
-                    "type": "execution_error"
-                }
+                "data": None,
+                "error": f"execution_error: Unexpected error: {str(e)}"
             }
     
     def get_mcp_resources(self) -> List[McpResource]:

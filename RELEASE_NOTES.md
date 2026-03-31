@@ -33,7 +33,7 @@ See `version.py` for full changelog details.
 
 ---
 
-# Release Notes - v1.1.2 (2026-03-31)
+# Release Notes - v1.1.3 (2026-03-31)
 
 This release adds CI automation and small packaging improvements.
 

@@ -9,7 +9,7 @@ from datetime import datetime
 from typing import Dict, Any
 
 # Version information
-__version__ = "1.1.2"
+__version__ = "1.1.3"
 __release_date__ = "2026-03-31"
 __author__ = "AI Assistant"
 __description__ = "Gmail Send Skill - Enhanced email sending with advanced Markdown to HTML conversion"
@@ -66,7 +66,7 @@ VERSION_INFO = {
                 "Update mcp_config.json naming to follow conventions (gmail_send)"
             ]
         },
-        "1.1.2": {
+        "1.1.3": {
             "date": "2026-03-31",
             "changes": [
                 "Add GitHub Actions CI workflow for automated testing",
